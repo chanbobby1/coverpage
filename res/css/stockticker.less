@@ -1,0 +1,44 @@
+@import "mixins";
+
+@changegreen: #00FF00;
+@changered: #FF0033;
+@changeyellow: #FFF200;
+
+@tickerheight: 40px;
+
+/************* TICKER **************************/
+.hticker {
+	position: absolute;
+	left: 0px;
+	width: 100%;
+	height: @tickerheight;
+	bottom: 0px;
+	overflow: hidden;
+	display: block;
+	margin: 5px;
+	font-size: 30px;
+	line-height: @tickerheight;
+	.background-linear-gradient(top, rgba(0, 0, 0, 0.6) 50%, rgba(6, 65, 93, 0.75) 100%);
+	-webkit-mask-image: -webkit-linear-gradient(left, transparent 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, transparent 100%);
+}
+
+.hticker li {
+	float: left;
+	padding-right: 40px;
+}
+
+.hticker span {
+	.transition(color 1s ease-in);
+}
+
+.hticker span.up {
+	color: @changegreen;
+}
+
+.hticker span.down {
+	color: @changered;
+}
+
+.hticker span.nochange {
+	color: @changeyellow;
+}

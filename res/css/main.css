@@ -1,0 +1,221 @@
+html {
+	background: no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+body {
+	font-family: 'Titillium Web', sans-serif;
+	font-size: 14px;
+	color: #fff;
+	overflow: hidden;
+}
+
+a {
+	color: #0084b4;
+	text-decoration: none;
+}
+
+a s {
+	text-decoration: none;
+	color: #0099d0;
+}
+
+a>tag:hover {
+	text-decoration: underline;
+}
+
+.slantartwork {
+	/*opacity: 0.5;*/;
+}
+
+.slant1 {
+	position: absolute;
+	top: 240px;
+	left: -50px;
+	width: 700px;
+	height: 100px;
+	-webkit-transform: skew(15deg,15deg);
+	-moz-transform: skew(15deg,15deg);
+	-o-transform: skew(15deg,15deg);
+	-ms-transform: skew(15deg,15deg);
+	transform: skew(15deg,15deg);
+	
+	background-image: -webkit-gradient( linear, left top, right top, color-stop(0.13, #292929), color-stop(0.57, #146470), color-stop(0.79, #009499) );
+	z-index: -102;
+}
+
+.slant2 {
+	position: absolute;
+	top: 267px;
+	left: 649px;
+	width: 250px;
+	height: 100px;
+	-webkit-transform: skew(15deg,-28deg);
+	-moz-transform: skew(15deg,-28deg);
+	-o-transform: skew(15deg,-28deg);
+	-ms-transform: skew(15deg,-28deg);
+	transform: skew(15deg,-28deg);
+	background-image: -webkit-gradient( linear, right top, left top, color-stop(0.13, #1B9FB8), color-stop(0.27, #188D9E), color-stop(0.79, #06BDC4) );
+	z-index: -100;
+}
+
+.slant3 {
+	position: absolute;
+	top: 191px;
+	left: 892px;
+	width: 60px;
+	height: 500px;
+	-webkit-transform: skew(11deg,38deg);
+	-moz-transform: skew(11deg,38deg);
+	-o-transform: skew(11deg,38deg);
+	-ms-transform: skew(11deg,38deg);
+	transform: skew(11deg,38deg);
+	background-image: -webkit-gradient( linear, left top, right bottom, color-stop(0.13, #3D8794), color-stop(0.27, #188D9E), color-stop(0.79, #0C1C46) );
+	z-index: -101;
+}
+
+
+/************** CTV VIDEO NEWS ********************/
+
+.videofeed {
+	position: relative;
+	z-index: -1;
+	margin-left: auto;
+	margin-right: 600px;
+	width: 960px;
+	height: 540px;
+	pointer-events: none;
+}
+
+.iframecontainer {
+	width: 960px;
+	height: 540px;
+	position: relative;
+	overflow: hidden;
+	pointer-events: none;
+	box-shadow: 0 0 20px 0px black;
+}
+
+.iframeContainer iframe {
+	position: absolute;
+	left: -160px;
+	top: -199px;
+	width: 1280px;
+	height: 1200px;
+}
+
+/*************** IMAGE STREAM *********************/
+/*#imgstream {
+	position: absolute;
+	right: 50px;
+	margin-top: 10px;
+	top: 380px;
+	height: 250px;
+	width: 500px;
+	overflow: hidden;
+	background: rgba(0,0,0,0.75);
+	border-radius: 5px;
+	list-style: none;
+	box-shadow: 0px 0px 20px 0px #000;
+	padding-left: 0px;
+	padding-right: 0px;
+	color: #fff;
+}
+
+#imgstream .bottom {
+	width: inherit;
+	height: 30px;
+	position: absolute;
+	bottom: 0;
+	background: #06415d;
+    background: #70C5EC;
+	-webkit-mask-image: -webkit-gradient(linear, left 0%, left bottom, from(rgba(0,0,0,0)), to(rgba(255,255,255,1)));
+	pointer-events: none;
+	border-radius: 5px;
+	text-align: right;
+}
+
+#imgstream .imgcontainer {
+	position: relative;
+	width: inherit;
+	height: inherit;
+}*/
+
+.featuredimageContainer {
+	position: absolute;
+	overflow: hidden;
+	display: none;
+	right: 80px;
+	margin-top: 10px;
+	top: 380px;
+	max-width: 470px;
+	box-shadow: 0px 0px 20px 0px #000;
+}
+
+.featuredimageContainer .title {
+	position: absolute;
+	height: 20px;
+	max-height: 20px;
+	width: 100%;
+	max-width: 470px;
+	line-height: 20px;
+	padding: 5px;
+	font-size: 14px;
+	background: rgba(0,0,0,0.75);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.featuredimageContainer #featuredimage {
+	margin-left: auto;
+	margin-right: auto;
+	max-height: 250px;
+	max-width: 470px;
+	border-radius: 5px;
+}
+
+.featuredimagelabel {
+	display: none;
+    position: absolute;
+    top: 420px;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    font-size: 14px;
+    right: 15px;
+    color: rgb(172, 172, 172);
+    background: rgba(0,0,0,0.75);
+    padding: 5px;
+    border-radius: 5px;
+    text-overflow:ellipsis;
+}
+
+
+.speech-wrapper {
+	background: url(../img/microphoneicon.png) no-repeat center;
+	width: 120px;
+	height: 120px;
+}
+
+#speech {
+	-webkit-transform: scale(8.0, 8.0);
+	width: 15px;
+	height: 30px;
+	margin: 40px 0 0;
+	padding : 0;
+	outline: 0;
+	border: 0;
+	opacity: 0.00;
+	background-color: transparent;
+}
+
+.speech-modal {
+	position: absolute;
+	margin: 10px;
+	left: 500px;
+}

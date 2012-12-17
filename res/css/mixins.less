@@ -1,0 +1,29 @@
+.border-radius (@radius) {
+	border-radius: @radius;
+	-moz-border-radius: @radius;
+	-webkit-border-radius: @radius;
+}
+
+.background-linear-gradient(@direction:top, @colorstop1, @colorstop2) {
+	background: -webkit-linear-gradient(@direction, @colorstop1, @colorstop2);
+	background: -moz-linear-gradient(@direction, @colorstop1, @colorstop2);
+	background: -o-linear-gradient(@direction, @colorstop1, @colorstop2);
+	background: -ms-linear-gradient(@direction, @colorstop1, @colorstop2);
+	background: linear-gradient(@direction, @colorstop1, @colorstop2);
+}
+
+.transform(@transformation) {
+	-webkit-transform: @transformation;
+	-moz-transform: @transformation;
+	-o-transform: @transformation;
+	-ms-transform: @transformation;
+	transform: @transformation;
+}
+
+.transition(@transition) {
+	-webkit-transition: @transition;
+	-moz-transition: @transition;
+	-o-transition: @transition;
+	-ms-transition: @transition;
+	transition: @transition;
+}

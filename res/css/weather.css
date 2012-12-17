@@ -1,0 +1,42 @@
+.weather {
+	font-family: 'Titillium Web', sans-serif;
+	color: #fff;
+	text-shadow: 0px 2px 3px #c498c6;
+}
+
+.weather .left {
+	float:left;
+	position: relative;
+	width: 180px;
+	height: 130px;
+	text-align: right;
+}
+
+.weather .right {
+	float: left;
+	height: 130px;
+	margin-left:5px;
+	text-align: left;
+	font-size: 250%;
+}
+
+.weather #weather_icon {
+	width: 175px;
+	height: 125px;
+}
+
+.weather #weather_location {
+	position: absolute;
+	width: inherit;
+	bottom: 5px;
+} 
+
+.weather #weather_forecast {
+	display:table-cell;
+	vertical-align:middle;
+}
+
+.weather #weather_alert {
+	font-size: 15px;
+	color: #fae36e;
+}
