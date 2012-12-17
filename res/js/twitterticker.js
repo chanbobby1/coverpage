@@ -1,5 +1,5 @@
 var lastTweetTime = 0;
-var maxTweets = 20;
+var maxTweets = 40;
 
 function tick(){
 	$('#ticker li:first')
