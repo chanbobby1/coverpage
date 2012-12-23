@@ -89,7 +89,10 @@ function loadXKCDImage() {
 function setFeaturedImageMaxHeight() {
 	var maxHeight = $(window).height() - ($("#ticker").outerHeight(true) + 10) - $("#stockticker").outerHeight(true);
 
-	$("#featuredimage").css("max-height", maxHeight + "px");
+	$(".featuredimageContainer").css("max-height", maxHeight + "px");
+	
+	var featuredImageMaxHeight = maxHeight - $(".featuredimageContainer .title").outerHeight();	
+	$("#featuredimage").css("max-height", featuredImageMaxHeight + "px");
 
 	// Adjust maxheight when resizing window.
 	$(window).resize(function () {
@@ -98,20 +101,18 @@ function setFeaturedImageMaxHeight() {
 }
 
 function setupFeatureImage() {
-	$(document).ready(function() {
-		setFeaturedImageMaxHeight();
+	setFeaturedImageMaxHeight();
+	loadXKCDImage();
+	load9GagImage();
+	
+	// Load new featured images every 30 min
+	setInterval(function() {
 		loadXKCDImage();
 		load9GagImage();
-		
-		// Load new featured images every 30 min
-		setInterval(function() {
-			loadXKCDImage();
-			load9GagImage();
-		}, 30*60*1000);
-		
-		// Cycle through featured image every minute.
-		setInterval(cycleFeaturedImage, 1*60*1000);
-	});
+	}, 30*60*1000);
+	
+	// Cycle through featured image every minute.
+	setInterval(cycleFeaturedImage, 1*60*1000);
 }
 
 $(document).ready(function () {
