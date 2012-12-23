@@ -13,7 +13,8 @@
 		"res/js/twitterticker.js",
 		"res/js/jquery.ticker.js",
 		"res/js/stockticker.js",
-		"res/js/clock.js"
+		"res/js/clock.js",
+		"res/js/featuredimage.widget.js"
 	);
 	
 	$stylesheets = array(
@@ -94,8 +95,6 @@
 	</body>
 	<script>
 		$(document).ready(function() {
-			setFeaturedImageMaxHeight();
-			setupFeatureImage();
 		});
 	</script>
 </html>

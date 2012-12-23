@@ -205,7 +205,6 @@ StockTicker.prototype = (function() {
 	}
 	
 	var setupOptions = function(opts) {
-	console.log("set")
 		$.extend(true, options, opts);
 	}
 	
