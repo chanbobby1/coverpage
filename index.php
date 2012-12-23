@@ -95,9 +95,7 @@
 	<script>
 		$(document).ready(function() {
 			setFeaturedImageMaxHeight();
-			loadXKCDImage();
-			load9GagImage();
-			setInterval(cycleFeaturedImage, 1*60*1000);
+			setupFeatureImage();
 		});
 	</script>
 </html>
