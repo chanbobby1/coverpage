@@ -7,7 +7,7 @@ TransitWidget.prototype = (function() {
 	var options = {
 		startingLoc: "",
 		googleDirectionsAPI : {
-			quota: 2500,
+			quota: 25000,
 			transitQuotaCost: 4
 		},
 		mapZoom: 15
@@ -17,7 +17,7 @@ TransitWidget.prototype = (function() {
 	
 	var destinations = [];
 	var map;
-	var mapCenter;
+	var homeLocation;
 	
 	// Google Services
 	var directionsService = new google.maps.DirectionsService();
@@ -27,6 +27,7 @@ TransitWidget.prototype = (function() {
 		isSetup: false
 	};
 	
+	// Get the request quota for each destination per hour
 	var getMaxRequestsPerDestinationPerHour = function() {
 		var api = options.googleDirectionsAPI;
 		
@@ -39,6 +40,11 @@ TransitWidget.prototype = (function() {
 		return maxTransitRequestsPerHour;
 	}
 	
+	// Given direction routes, find the first leg of the 
+	// route which is a transit route. Then return the
+	// transit info. If no transit route is found,
+	// then it is a walking route. Return walking route
+	// data.
 	var getNextTransitTimeAndStop = function(routes) {
 		
 		var destination,
@@ -97,11 +103,18 @@ TransitWidget.prototype = (function() {
 		};
 	}
 	
+	// Organize directions data from a directions service request
+	// This information is passed to displayDirections()
+	// so that its information may be displayed in the widget
+	// If this is a transit route, compute the remaining time
+	// until the vehicle arrives and adjust the bounds of the map
+	// to fit the transit stop marker 
 	var handleDirections = function(destination, data) {		
 		var status = data.status;
 		
-		//console.log(data);
+		console.log(data);
 		
+		// Handle failed directions
 		if(status != "OK") {
 			console.error(data);
 			
@@ -113,18 +126,28 @@ TransitWidget.prototype = (function() {
 			displayDirections(nextTransitInfo);
 			return;
 		}
-		
+				
 		var nextTransitInfo = getNextTransitTimeAndStop(data.routes);
 		
-		//console.log(nextTransitInfo);
+		console.log(nextTransitInfo);
 		
 		if(nextTransitInfo.mode == "TRANSIT") {
+			
+			// Compute the remaining time until the transit vehicle arrives
 			var now = new Date();
 			var timeToDepartureInSeconds = nextTransitInfo.departureTime.time.getTime()/1000 - now.getTime()/1000;
 			
 			var timeToDepartureInMinutes = Math.round(timeToDepartureInSeconds/60);
 			
 			nextTransitInfo.departureTime.timeToDepartureInMinutes = timeToDepartureInMinutes;
+			
+			// Store the transit stop location
+			// The location will be used to fit the bounds of the map
+			destination.stopLocation = nextTransitInfo.stopLocation;
+			
+			// Now with the new transit stop location added, try to 
+			// adjust the map bounds so it fits the new transit stop location
+			fitNearbyTransitMarkers();
 		}
 		
 		nextTransitInfo.status = status;
@@ -133,13 +156,14 @@ TransitWidget.prototype = (function() {
 		displayDirections(nextTransitInfo);
 	}
 	
+	// Display the transit schedule for the first transit route segment in the directions
 	var displayDirections = function(transitInfo) {
-		var destinationId = "transit_"+transitInfo.destination.toLowerCase().replace(/[\s:]/g, "_");
+		var destinationId = "transit_"+transitInfo.destination.localName.toLowerCase().replace(/[\s:]/g, "_");
 		
 		var $li = $('<li id="'+destinationId+'"></li>');
 		
 		var $destination = $('<div class="destination"></div>');
-		$destination.text(transitInfo.destination);
+		$destination.text(transitInfo.destination.localName);
 		
 		var $triangle = $('<div class="triangle"></div>');
 		
@@ -168,7 +192,7 @@ TransitWidget.prototype = (function() {
 				$departure.prepend($countdown).prepend(timestring).prepend($transitline);
 				
 			} else if(mode == "WALKING") {
-				$departure.text("Take " + transitInfo.duration.text + " to walk to " + transitInfo.destination);
+				$departure.text("Take " + transitInfo.duration.text + " to walk to " + transitInfo.destination.localName);
 			}
 		} else {
 			
@@ -220,7 +244,8 @@ TransitWidget.prototype = (function() {
 		}
 	}
 	
-	var setMapMarker = function(position) {
+	// Adds a bus marker to the map at it's position
+	var addBusMarkerToMap = function(position) {
 			
 		var latlong = new google.maps.LatLng(position.lat, position.lng);
 		
@@ -260,7 +285,9 @@ TransitWidget.prototype = (function() {
 		return null;
 	}
 	
-	var loadDirections = function(destination, now) {
+	// Request Google for directions between the home location to the given destination
+	// and departure time
+	var loadDirections = function(destination, departureTime) {
 			
 		var request = {
 			origin: options.startingLoc,
@@ -268,7 +295,7 @@ TransitWidget.prototype = (function() {
 			travelMode: google.maps.TravelMode.TRANSIT,
 			provideRouteAlternatives: true,
 			transitOptions : {
-				departureTime: now
+				departureTime: departureTime
 			}
 		};
 		
@@ -295,12 +322,14 @@ TransitWidget.prototype = (function() {
 				// If there is a previously existing directions display, remove it from the map
 				if(typeof destination.directionsDisplay != "undefined") {
 					destination.directionsDisplay.setMap(null);
+					// Reset the stop location
+					destination.stopLocation = null;
 				}
 				
 				destination.directionsDisplay = directionsDisplay;
 				
 				// Use result to display the next transit time and stop					
-				handleDirections(destination.localName, result);
+				handleDirections(destination, result);
 			}
 		});
 	}
@@ -314,7 +343,6 @@ TransitWidget.prototype = (function() {
 		// Get directions from starting location to each destination in the array.
 		for(var i = 0; i < destinations.length; i++) {
 			var destination = destinations[i];
-			console.log("Looking for directions to " + destination.localName);
 			loadDirections(destination, now);
 		}
 	}
@@ -335,15 +363,37 @@ TransitWidget.prototype = (function() {
 	
 	// Reposition the map at the starting location zoomed in at street level
 	var repositionMap = function() {
-		console.log("Repositioning map");
-				
+					
 		if(map.getZoom() != options.mapZoom) {
 			map.setZoom(options.mapZoom);
 		}
 		
-		if(map.getCenter() != mapCenter) {
-			map.setCenter(mapCenter);
+		if(map.getCenter() != homeLocation) {
+			map.setCenter(homeLocation);
 		}
+	}
+	
+	// Fit the nearby transit stop markers on the map
+	// Courtesy of: http://blog.shamess.info/2009/09/29/zoom-to-fit-all-markers-on-google-maps-api-v3/
+	var fitNearbyTransitMarkers = function() {
+		var bounds = new google.maps.LatLngBounds();
+		// Add home location to the bounds
+		bounds.extend(homeLocation);
+
+		// Now add transit stop locatios to the bounds
+		for(var i = 0; i < destinations.length; i++) {
+			var destination = destinations[i];
+						
+			// If the destination has a transit stop location on it's route
+			if(typeof destination.stopLocation != "undefined") {
+				
+				// Then add it to the bounds
+				bounds.extend(destination.stopLocation);
+			}
+		}
+		
+		// Fit the map to these bounds
+		map.fitBounds(bounds);
 	}
 	
 	// Set the map height based on the screen height
@@ -360,7 +410,7 @@ TransitWidget.prototype = (function() {
 		// Adjust maxheight when resizing window.
 		$(window).resize(function () {
 			setMapHeight();
-			repositionMap();
+			fitNearbyTransitMarkers();
 		});
 	}
 	
@@ -390,9 +440,7 @@ TransitWidget.prototype = (function() {
 					console.log("Updating " + destinationLocalname + ". This trip has expired. Loading new trip.");
 				
 					var destination = getDestinationByLocalName(destinationLocalname);
-					
-					console.log(destinationLocalname);
-				
+									
 					loadDirections(destination, now);
 				}
 			}
@@ -417,18 +465,18 @@ TransitWidget.prototype = (function() {
 		}, function(results, status) {
 			if (status == google.maps.GeocoderStatus.OK) {
 			
-				mapCenter = results[0].geometry.location;
+				homeLocation = results[0].geometry.location;
 			
-				map.setCenter(mapCenter);
+				map.setCenter(homeLocation);
 				
 				// Add a marker to show the starting location				
 				var marker = new google.maps.Marker({
 					map: map,
-					position: mapCenter
+					position: homeLocation
 				});
 							
 			} else {
-				alert("Geocode was not successful due to: " + status);
+				alert("Geocoding the starting location was not successful due to: " + status);
 			}
 		});
 		
@@ -478,7 +526,8 @@ TransitWidget.prototype = (function() {
 		},
 		setStartingLocation: function(loc) {
 			setStartingLocation(loc);
-		},
+		}
+		/*,
 		getDestinations: function() {
 			return destinations;
 		},
@@ -489,8 +538,12 @@ TransitWidget.prototype = (function() {
 			repositionMap();
 		},
 		getStartingLocation: function() {
-			return mapCenter;
+			return homeLocation;
+		},
+		fitNearbyTransitMarkers: function() {
+			fitNearbyTransitMarkers();
 		}
+		*/
 	}
 })();
 
