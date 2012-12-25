@@ -73,7 +73,7 @@ TransitWidget.prototype = (function() {
 						
 						var info = {
 							destination: destination,
-							line: transit.line.short_name,
+							line: transit.line,
 							agencies: agencyList, 
 							stop: transit.departure_stop.name,
 							stopLocation: transit.departure_stop.location,
@@ -100,7 +100,7 @@ TransitWidget.prototype = (function() {
 	var handleDirections = function(destination, data) {		
 		var status = data.status;
 		
-		console.log(data);
+		//console.log(data);
 		
 		if(status != "OK") {
 			console.error(data);
@@ -116,7 +116,7 @@ TransitWidget.prototype = (function() {
 		
 		var nextTransitInfo = getNextTransitTimeAndStop(data.routes);
 		
-		console.log(nextTransitInfo);
+		//console.log(nextTransitInfo);
 		
 		if(nextTransitInfo.mode == "TRANSIT") {
 			var now = new Date();
@@ -154,7 +154,10 @@ TransitWidget.prototype = (function() {
 				var $transitline = $('<b class="transitline"></b>');
 				var $agencies = $('<small  class="agencies"></small>');
 				$agencies.text(transitInfo.agencies);
-				$transitline.text(transitInfo.line).prepend($agencies);
+				$transitline.text(transitInfo.line.short_name).prepend($agencies).css({
+					color: transitInfo.line.text_color,
+					background: transitInfo.line.color
+				});
 				
 				var timestring = transitInfo.departureTime.text + " ";
 				var timestamp = transitInfo.departureTime.time.getTime();
@@ -168,7 +171,24 @@ TransitWidget.prototype = (function() {
 				$departure.text("Take " + transitInfo.duration.text + " to walk to " + transitInfo.destination);
 			}
 		} else {
-			$departure.text("Data unavailable due to " + transitInfo.status + " :(");
+			
+			var errorMsg = "No results found";
+			if(transitInfo.status == "ERROR") {
+				errorMsg = "Couldn't contact Google";
+			} else if(transitInfo.status == "INVALID_REQUEST") {
+				errorMsg = "Invalid geocoder request";
+			} else if(transitInfo.status == "OVER_QUERY_LIMIT") {
+				errorMsg = "Too many requests! Over the query limit";
+			} else if(transitInfo.status == "REQUEST_DENIED") {
+				errorMsg = "Not allowed to use geocoder";
+			} else if(transitInfo.status == "UNKNOWN_ERROR") {
+				errorMsg = "Geocoding error on Google's server";
+			} else if(transitInfo.status == "ZERO_RESULTS") {
+				errorMsg = "No results found";
+			} 
+
+			
+			$departure.text("ERROR: " + errorMsg + " :(");
 		}
 		
 		$li.append($destination).append($triangle).append($departure);
@@ -186,7 +206,7 @@ TransitWidget.prototype = (function() {
 			$("#"+destinationId+"").replaceWith($li);
 		}
 		
-		if(mode == "WALKING") {
+		if(mode != "TRANSIT") {
 			setTimeout(function() {
 				
 				var now = new date();
@@ -254,7 +274,8 @@ TransitWidget.prototype = (function() {
 		
 		// Query google for transit directions
 		directionsService.route(request, function(result, status) {
-			if (status == google.maps.DirectionsStatus.OK) {
+		
+			if (result != null) {
 								
 				var destination = getDestinationByQueryLocation(result.Db.destination);
 				
@@ -262,8 +283,12 @@ TransitWidget.prototype = (function() {
 					return;
 				}
 				
+				var directionsRendererOptions = {
+					preserveViewport: true	
+				};
+				
 				// Render directions on the Google Map
-				var directionsDisplay = new google.maps.DirectionsRenderer();
+				var directionsDisplay = new google.maps.DirectionsRenderer(directionsRendererOptions);
 				directionsDisplay.setMap(map);
 				directionsDisplay.setDirections(result);
 				
@@ -276,11 +301,6 @@ TransitWidget.prototype = (function() {
 				
 				// Use result to display the next transit time and stop					
 				handleDirections(destination.localName, result);
-				
-				// Reposition the map after 2 seconds
-				setTimeout(function() {
-					repositionMap();
-				}, 2000);
 			}
 		});
 	}
@@ -294,16 +314,8 @@ TransitWidget.prototype = (function() {
 		// Get directions from starting location to each destination in the array.
 		for(var i = 0; i < destinations.length; i++) {
 			var destination = destinations[i];
-			
+			console.log("Looking for directions to " + destination.localName);
 			loadDirections(destination, now);
-			
-			if(i == destinations.length-1) {
-				
-				// Reposition the map after 2 seconds
-				setTimeout(function() {
-					repositionMap();
-				}, 2000);
-			}
 		}
 	}
 	
@@ -324,8 +336,7 @@ TransitWidget.prototype = (function() {
 	// Reposition the map at the starting location zoomed in at street level
 	var repositionMap = function() {
 		console.log("Repositioning map");
-		console.log(map.getZoom() +" == "+options.mapZoom);
-		
+				
 		if(map.getZoom() != options.mapZoom) {
 			map.setZoom(options.mapZoom);
 		}
@@ -394,7 +405,9 @@ TransitWidget.prototype = (function() {
 		var mapOptions = {
 			center: new google.maps.LatLng(0, 0),
 			zoom: options.mapZoom,
-			mapTypeId: google.maps.MapTypeId.ROADMAP
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false,
+			streetViewControl: false
 		};
 	
 		map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
