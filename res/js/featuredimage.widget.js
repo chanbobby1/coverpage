@@ -265,7 +265,9 @@ FeaturedImageWidget.prototype = (function() {
 		}, options.time.loadNewImages);
 		
 		// Cycle through featured image every minute.
-		setInterval(cycleFeaturedImage, options.time.cycleImage);
+		setInterval(function() {
+			cycleFeaturedImage()
+		}, options.time.cycleImage);
 				
 		state.isSetup = true;
 	}

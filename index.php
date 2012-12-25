@@ -4,6 +4,8 @@
 
 	$bg = "milky_way_sky-1920x1080.jpg";
 
+	$GOOGLE_API_KEY = "AIzaSyAAc16615kw98ZLpwRZhckJkhO-A55Xd-c";
+
 	$scripts = array(
 		"res/js/less-1.3.1.min.js",
 		"res/js/jquery-1.8.3.min.js",
@@ -14,7 +16,9 @@
 		"res/js/jquery.ticker.js",
 		"res/js/stockticker.js",
 		"res/js/clock.js",
-		"res/js/featuredimage.widget.js"
+		"res/js/featuredimage.widget.js",
+		"https://maps.googleapis.com/maps/api/js?key=".$GOOGLE_API_KEY."&sensor=false",
+		"res/js/transit.widget.js"
 	);
 	
 	$stylesheets = array(
@@ -28,7 +32,9 @@
 	
 	$lesssheets = array(
 		"res/css/twitterticker.less",
-		"res/css/stockticker.less"
+		"res/css/stockticker.less",
+		"res/css/featuredimage.widget.less",
+		"res/css/transit.widget.less"
 	);
 ?>
 
@@ -60,6 +66,13 @@
 		</script>
 	</head>
 	<body>
+	
+		<ul id="transit" class="ticker">
+			<div class="tickerbottom"></div>
+			<li id="map">
+				<div id="map_canvas"></div>
+			</li>
+		</ul>
 	
 		<div class="speech-modal">
 			<div class="speech-wrapper">
