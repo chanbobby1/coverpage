@@ -221,14 +221,16 @@ TransitWidget.prototype = (function() {
 		if($("#"+destinationId+"").length == 0) {
 			// Append it to the transit widget ul 
 			$("#transit").prepend($li);
-			
-			// Everytime we append a new li element, it shifts the map down so we must adjust the map
-			// height so that it fits.
-			setMapHeight();	
+				
 		} else {		
 			// If it does exist, replace it's contents with the now contents
 			$("#"+destinationId+"").replaceWith($li);
 		}
+		
+		// Everytime we append a new li element, it shifts the map down so we must adjust the map
+		// height so that it fits. Sometimes when replacing the li contents the new contents take
+		// space so we must adjust the height of the map.
+		setMapHeight();
 		
 		if(mode != "TRANSIT") {
 			setTimeout(function() {
