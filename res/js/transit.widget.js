@@ -305,8 +305,8 @@ TransitWidget.prototype = (function() {
 		directionsService.route(request, function(result, status) {
 		
 			if (result != null) {
-								
-				var destination = getDestinationByQueryLocation(result.Db.destination);
+				console.log(result);
+				var destination = getDestinationByQueryLocation(result.Cb.destination);
 				
 				if(destination == null) {
 					return;
@@ -552,10 +552,11 @@ TransitWidget.prototype = (function() {
 $(document).ready(function() {
 	transitWidget = new TransitWidget();
 	transitWidget.setup({
-		startingLoc: "100 Front St W, Toronto, ON"
+		startingLoc: "333 King St. N, Waterloo, ON"
 	});
-	transitWidget.addDestination("Markham", "Markham, ON");
-	transitWidget.addDestination("U of T", "University of Toronto, Toronto, ON");
-	transitWidget.addDestination("City Hall", "City Hall, Toronto, ON");
+	transitWidget.addDestination("UW BMH", "University of Waterloo BMH, Waterloo, ON");
+	transitWidget.addDestination("UW SCH", "University of Waterloo SCH, Waterloo, ON");
+	transitWidget.addDestination("Conestoga Mall", "Conestoga Mall, Waterloo, ON");
+	transitWidget.addDestination("Uptown Waterloo", "Uptown Waterloo, Waterloo, ON");
 	transitWidget.loadDirectionsToAllDestinations();
 });
