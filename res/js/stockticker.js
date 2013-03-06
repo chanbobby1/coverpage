@@ -10,8 +10,8 @@ StockTicker.prototype = (function() {
 	var options = {
 		symbols: [],
 		time: {
-			loadQuotes: 30*1000, // Refresh quotes every 30 seconds
-			scrollSpeed: 120 // Speed of ticker scroller in pixels per second
+			loadQuotes: 15*60*1000, // Refresh quotes every 15 minutes
+			scrollSpeed: 50 // Speed of ticker scroller in pixels per second
 		}
 	};
 	
@@ -176,7 +176,13 @@ StockTicker.prototype = (function() {
 			dataType: 'jsonp',
 			timeout: 10000,
 			success: function(data) {
-				 
+				console.log(data);
+				
+				if(typeof data.query.results.row == "undefined") {
+					console.error("No stock results!");
+					return;
+				}
+				
 				var stockData = data.query.results.row;
 							
 				displayQuotes(stockData);
@@ -230,7 +236,7 @@ $(document).ready(function() {
 		"AAPL",
 		"NFLX",
 		"GRPN",
-		"RIMM",
+		"BBRY",
 		"GOOG",
 		"FB",
 		"ZNGA",
