@@ -306,9 +306,23 @@ TransitWidget.prototype = (function() {
 		
 			if (result != null) {
 				console.log(result);
-				var destination = getDestinationByQueryLocation(result.Cb.destination);
+				
+				var searchDestination;
+				
+				for(var prop in result) {
+					if(typeof result[prop].destination != "undefined") {
+						searchDestination = result[prop].destination;
+					}
+				}
+				
+				if(searchDestination == null) {
+					console.error("Result destination is null!");
+				}
+				
+				var destination = getDestinationByQueryLocation(searchDestination);
 				
 				if(destination == null) {
+					console.error("Destination is null!");
 					return;
 				}
 				
